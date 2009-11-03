@@ -3,6 +3,13 @@
 
 static GMainLoop *main_loop;
 
+gint
+test_int (gint in)
+{
+  return in;
+}
+
+
 static void
 device_available_cb (GUPnPControlPoint *cp,
                             GUPnPDeviceProxy *proxy)

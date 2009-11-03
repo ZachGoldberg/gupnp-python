@@ -35,6 +35,7 @@ def device_available(cp, device):
   global device_test_complete
   if device_test_complete:
      return
+
   test_begin("Check device location")
   test_end(t(device.get_location))
 
@@ -82,21 +83,21 @@ def device_available(cp, device):
 
   test_begin("Check device list_service_types")
   test_end(t(device.list_service_types))
-	
+
+  test_begin("Check device list_devices")
+  test_end(t(device.list_devices)) 
+
+  test_begin("Check device url")
+  test_end(t(device.get_url_base))
+
+  test_begin("Check device list_services")
+  test_end(t(device.list_services)) #, "known segv")
+
   test_begin("Check device icon url")
   test_skip(device.get_icon_url, "Needs params")
 
-  test_begin("Check device list_devices")
-  test_skip(device.list_devices, "Known segv")
-
-  test_begin("Check device list_services")
-  test_skip(device.list_services, "known segv")
-
   test_begin("Check device description value")
   test_skip(device.get_description_value, "needs params")
-
-  test_begin("Check device url")
-  test_skip(device.get_url_base, "known segv")
 
   test_begin("Check device get_device")
   test_skip(device.get_device, "needs params")
@@ -114,13 +115,10 @@ GObject.threads_init()
 # Get a default maincontext
 main_ctx = GLib.main_context_default() 
 
-
 # Bind to eth0 in the maincontext on any port
-ctx = GUPnP.UPnPContext(main_ctx, "eth0", 0)
+ctx = GUPnP.Context(interface="eth0")
 
-# Pretend to be a root device (Zeeshan needs to document these uri things...)
-cp  = GUPnP.UPnPControlPoint(ctx, "upnp:rootdevice")
-#cp  = GUPnP.UPnPControlPoint(ctx, "ssdp:all")
+cp  = GUPnP.ControlPoint().new(ctx, "upnp:rootdevice")
 
 # Use glib style .connect() as a callback on the controlpoint to listen for new devices
 cp.connect("device-proxy-available", device_available)
