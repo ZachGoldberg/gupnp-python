@@ -1,5 +1,6 @@
 from gi.repository import GLib, GUPnP, GSSDP, GObject, libsoup
 from gupnp_device_tests import device_available
+from gupnp_control_point_tests import test_control_point
 
 # Note: glib.thread_init() doesn't work here, have to use the gobject call
 GObject.threads_init()
@@ -7,9 +8,10 @@ GObject.threads_init()
 # Get a default maincontext
 main_ctx = GLib.main_context_default() 
 
-# Bind to eth0 in the maincontext on any port
+test_control_point()
 ctx = GUPnP.Context(interface="eth0")
 
+# Bind to eth0 in the maincontext on any port
 cp  = GUPnP.ControlPoint().new(ctx, "upnp:rootdevice")
 
 # Use glib style .connect() as a callback on the controlpoint to listen for new devices

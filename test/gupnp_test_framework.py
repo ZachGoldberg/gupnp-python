@@ -6,10 +6,10 @@ tests_fail = 0
 tests_skip = 0
 
 device_test_complete = False
-
+control_point_test_complete = False
 
 def check_exit():
-  if (device_test_complete):
+  if device_test_complete and control_point_test_complete:
     sys.exit(0)
 
 def test_begin(name):
