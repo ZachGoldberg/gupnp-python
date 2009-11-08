@@ -18,6 +18,18 @@ device_available_cb (GUPnPControlPoint *cp,
   GUPnPDeviceInfo* gupnp_device_info = GUPNP_DEVICE_INFO(proxy);
   g_print("Device model name: %s\n", gupnp_device_info_get_model_name(gupnp_device_info));
 
+  GList* proxies = gupnp_control_point_list_device_proxies(cp); 
+  GList* px2;
+  GUPnPServiceProxy *px = proxies;
+  int c = 1;
+  for (px2 = proxies; px2; px2 = px2->next){
+     
+    g_print("Service Proxy: %x", &px);
+    g_print("Service Proxy Private: %x", &px->priv);
+    
+    px = &proxies[c++];
+    g_print("Proxy %d", c);
+  }
 }
 
 

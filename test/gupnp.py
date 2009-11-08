@@ -1,6 +1,7 @@
 from gi.repository import GLib, GUPnP, GSSDP, GObject, libsoup
 from gupnp_device_tests import device_available
 from gupnp_control_point_tests import test_control_point
+from gupnp_service_proxy_tests import device_available_service_test
 
 # Note: glib.thread_init() doesn't work here, have to use the gobject call
 GObject.threads_init()
@@ -16,6 +17,7 @@ cp  = GUPnP.ControlPoint().new(ctx, "upnp:rootdevice")
 
 # Use glib style .connect() as a callback on the controlpoint to listen for new devices
 cp.connect("device-proxy-available", device_available)
+cp.connect("device-proxy-available", device_available_service_test)
 
 # "Tell the Control Point to Start Searching"
 GSSDP.ResourceBrowser.set_active(cp, True)
