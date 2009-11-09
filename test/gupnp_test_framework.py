@@ -5,6 +5,7 @@ tests_pass = 0
 tests_fail = 0
 tests_skip = 0
 
+root_device_test_complete = False
 device_test_complete = False
 control_point_test_complete = False
 service_test_complete = False
@@ -27,9 +28,13 @@ def test_end(passed):
 def test_skip(a=None, doc=""):
   sys.stdout.write("\033[0;33mSkipped... (%s)\033[00m\n" % doc)
 
+def e(val, expected):
+  sys.stdout.write(" (got %s expected %s) " % (val, expected))
+  return val == expected
+
 def t(func, args=None):
-  if not args: args={}
-  obj = func(**args)
+  if not args: args=[]
+  obj = func(*args)
   sys.stdout.write("(Value: %s) " % obj.__repr__())
   if isinstance(obj, list):
     return dir(obj) != None and obj[0] != None

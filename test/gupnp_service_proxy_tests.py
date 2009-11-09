@@ -1,6 +1,8 @@
 from gi.repository import GObject
 from gupnp_test_framework import *
 import gupnp_test_framework as testing
+from gupnp_root_device_tests import root_device_tests
+from gupnp_service_info_tests import service_info_tests
 
 def dummy():
   print "DUMMY TEST RUN"
@@ -42,10 +44,13 @@ def device_available_service_test(cp, device):
 
   test_begin("Check remove notify")
   test_end(f(service.remove_notify, ["Action", None, None]))
+
+
+  service_info_tests(service)
+
   testing.service_test_complete = True
 
   check_exit()
-
 
 def service_action_test(service_action = None):
    pass

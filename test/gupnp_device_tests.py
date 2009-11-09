@@ -47,8 +47,6 @@ def device_available(cp, device):
   test_begin("Check device dlna capabilities")
   test_end(t(device.list_dlna_capabilities))
 
-
-  print "\n" * 5
   test_begin("Check device list_device_types")
   test_end(t(device.list_device_types))
 
@@ -79,3 +77,4 @@ def device_available(cp, device):
   testing.device_test_complete = True
 
   check_exit()
+
