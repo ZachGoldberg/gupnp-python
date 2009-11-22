@@ -5,6 +5,9 @@ def device_available(cp, device):
   if testing.device_test_complete:
      return
 
+  print "Device"
+  print device
+
   test_begin("Check device location")
   test_end(t(device.get_location))
 

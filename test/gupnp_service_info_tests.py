@@ -36,8 +36,8 @@ def service_info_tests(service):
   test_begin("Check service get introspection")
   test_end(t(service.get_introspection))
 
-  test_begin("Check service get introspection async")
-  test_end(f(service.get_introspection_async, [callback, None]))
+#  test_begin("Check service get introspection async")
+#  test_end(f(service.get_introspection_async, [callback, None]))
 
 
 
