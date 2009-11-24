@@ -1,11 +1,12 @@
-from gi.repository import GLib, GUPnP, GSSDP, GObject, libsoup
+from gi.repository import GLib, GUPnP, GUPnPAV, GSSDP, GObject, libsoup
 import os
 import pdb
 
 devices = []
-
-def ps():
-  pdb.set_trace()
+introspections = []
+containers = []
+objects = []
+serv = None
 
 
 def play_complete(service, action, userdata):
@@ -19,6 +20,9 @@ def set_uri_complete(service, action, userdata):
 
 def got_introspection(service, intro, error, userdata):
   print "Got introspection!"
+  global introspections
+  introspections[service] = intro
+
   actions = intro.list_actions()
   print len(actions)
   for i in actions:
@@ -35,14 +39,57 @@ def got_introspection(service, intro, error, userdata):
           print "Done Stopping"
           service.send_action_hash("Play", data2, {})
 
+
+def new_item(node, object):
+  print object.get_title() 
+  objects.append(object)
+
+def new_container(node, object):
+  containers.append(object)
+  in_data = {"ObjectID": object.get_id(), "BrowseFlag": "BrowseDirectChildren",
+		    "Filter": "", "StartingIndex": "0", "RequestCount": "0",
+		    "SortCriteria": ""}
+  out_data = {"Result": "", "NumberReturned": "", "TotalMatches": "", "UpdateID": ""}
+  return_data = serv.send_action_hash("Browse", in_data, out_data)
+  parser = GUPnPAV.GUPnPDIDLLiteParser()
+  parser.connect("container_available", new_container)
+  parser.connect("item_available", new_item)
+  parser.parse_didl(return_data[1]["Result"])
+ 
+ 
+
+def server_introspection(service, introspection, error, userdata):
+  print "Got server introspection"
+  for i in introspection.list_actions():
+      if i.name == "Browse":
+         in_data = {"ObjectID": "0", "BrowseFlag": "BrowseDirectChildren",
+		    "Filter": "", "StartingIndex": "0", "RequestCount": "0",
+		    "SortCriteria": ""}
+         out_data = {"Result": "", "NumberReturned": "", "TotalMatches": "", "UpdateID": ""}
+	 print "SEND ACTION"
+         return_data = service.send_action_hash("Browse", in_data, out_data)
+	 global serv
+	 serv=service
+	 print "Good news!"
+	 print return_data[1]["Result"]
+	 parser = GUPnPAV.GUPnPDIDLLiteParser()
+	 parser.connect("container_available", new_container)
+	 parser.connect("item_available", new_item)
+	 parser.parse_didl(return_data[1]["Result"])
+	 print len(objects)
+
 def device_available(cp, device):
   devices.append(device)
   print device.get_model_name()
-  if device.get_model_name() == "gmediarender":
-      for service in device.list_services():
-          print service.get_service_type()
-          if "AV" in service.get_service_type():
-              service.get_introspection_async(got_introspection, None)
+  for service in device.list_services():
+      print service.get_service_type()
+      service.get_introspection_async(got_introspection, None)
+
+#  if device.get_model_name() == "MediaTomb":
+#      for service in device.list_services():
+#          print service.get_service_type()
+#          if "ContentDirectory" in service.get_service_type():
+#              service.get_introspection_async(server_introspection, None)
 
 def run_timer():
   return True
